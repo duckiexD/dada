@@ -5,7 +5,6 @@ import math
 from collections import deque
 import time
 
-# Инициализация Pygame
 pygame.init()
 
 # Константы
@@ -15,7 +14,7 @@ GRID_WIDTH = WIDTH // GRID_SIZE
 GRID_HEIGHT = HEIGHT // GRID_SIZE
 FPS = 10
 
-# Цвета
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -36,12 +35,11 @@ class LearningSnake:
         self.fitness = 0
         self.generation = generation
         
-        # АБСОЛЮТНО нулевые знания для первого поколения
         if brain is None:
             self.brain = {
-                'food_preference': 0.0,  # НОЛЬ - не знает что такое еда
-                'safety_preference': 0.0,  # НОЛЬ - не знает об опасности
-                'exploration': 0.0,  # НОЛЬ - не умеет исследовать
+                'food_preference': 0.0, 
+                'safety_preference': 0.0,  
+                'exploration': 0.0,  
             }
         else:
             self.brain = brain.copy()
@@ -88,13 +86,11 @@ class LearningSnake:
         return vision
     
     def decide_direction(self):
-        # Если все параметры нулевые - ТОЛЬКО случайное движение
         if self.brain['food_preference'] == 0.0 and self.brain['safety_preference'] == 0.0 and self.brain['exploration'] == 0.0:
-            # АБСОЛЮТНО случайное движение для первого поколения
             return random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
         
         vision = self.get_vision()
-        scores = [0, 0, 0]  # вперед, влево, вправо
+        scores = [0, 0, 0] 
         
         for i in range(3):
             wall_idx = i * 3
@@ -159,7 +155,6 @@ class LearningSnake:
 class GeneticAlgorithm:
     def __init__(self, population_size=15):
         self.population_size = population_size
-        # Первое поколение создается с АБСОЛЮТНО нулевыми знаниями
         self.population = [LearningSnake(generation=1) for _ in range(population_size)]
         self.generation = 1
         self.best_snakes = []
@@ -184,7 +179,6 @@ class GeneticAlgorithm:
         
         # Сохраняем лучшую змейку поколения
         if best_generation_snake:
-            # Создаем копию с ТЕМИ ЖЕ знаниями
             best_snake_copy = LearningSnake(best_generation_snake.brain, self.generation)
             best_snake_copy.score = best_generation_score
             self.best_snakes.append(best_snake_copy)
@@ -194,13 +188,11 @@ class GeneticAlgorithm:
         """Улучшаем мозг в зависимости от номера поколения"""
         improved_brain = brain.copy()
         
-        # Для первого поколения knowledge = 0, для второго = 0.15, для третьего = 0.3 и т.д.
         target_knowledge = min(1.0, (current_generation - 1) * 0.15)
         
         # Плавно приближаемся к целевому уровню знаний
         for key in improved_brain:
             current = brain[key]
-            # Увеличиваем знания, но не уменьшаем
             if target_knowledge > current:
                 improved_brain[key] = min(1.0, current + (target_knowledge - current) * 0.5)
             
@@ -232,7 +224,7 @@ class GeneticAlgorithm:
             for key in parent1.brain.keys():
                 base_value = (parent1.brain[key] + parent2.brain[key]) / 2
                 # Улучшаем потомство для следующего поколения
-                target_knowledge = min(1.0, self.generation * 0.15)  # Текущее поколение * 0.15
+                target_knowledge = min(1.0, self.generation * 0.15)
                 if target_knowledge > base_value:
                     child_brain[key] = min(1.0, base_value + (target_knowledge - base_value) * 0.3)
                 else:
@@ -257,7 +249,6 @@ def run_learning_demo(ga, max_generations=10):
     running = True
     
     while running and current_generation < max_generations:
-        # Берем змейку из сохраненных лучших для этого поколения
         if current_generation < len(ga.best_snakes):
             original_snake = ga.best_snakes[current_generation]
             generation_best_score = ga.best_scores[current_generation]
@@ -296,7 +287,6 @@ def run_learning_demo(ga, max_generations=10):
                 demo_snake = LearningSnake(original_snake.brain, original_snake.generation)
                 current_demo_score = 0
             
-            # Отрисовка
             screen.fill(BLACK)
             
             # Сетка
@@ -409,7 +399,7 @@ def run_learning_demo(ga, max_generations=10):
 
 def main():
     print("🚀 Запуск эволюции змеек...")
-    print("🧠 Поколение 1: ПОЛНЫЙ НОЛЬ знаний! (0%, 0%, 0%)")
+    print("🧠 Поколение 1: Самая тупая без знаний! (0%, 0%, 0%)")
     print("📈 С каждым поколением: + к еде, + к осторожности, + к исследованию")
     print("=" * 65)
     
@@ -452,4 +442,5 @@ def main():
     pygame.quit()
 
 if __name__ == "__main__":
+
     main()
